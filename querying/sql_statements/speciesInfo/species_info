@@ -1,0 +1,12 @@
+
+
+
+SELECT JSON_AGG(canonical_name) candidates, any_value(details), doi FROM (SELECT a.canonical_name, (p.body#>>'{published, date-parts, 0, 0}')::int pub_year, concat(p.body#>>'{title, 0}', ' ', abstrct.abstract) details, p.doi doi  FROM (SELECT DISTINCT ON (doi, canonical_name) * FROM title_latin_animals 
+    UNION SELECT * FROM abstract_latin_animals) as a
+    JOIN paper_stage as p ON p.doi = a.doi
+    JOIN ab_abstracts as abstrct ON abstrct.doi = p.doi
+) 
+GROUP BY doi
+LIMIT 10 OFFSET 50 ;
+
+
